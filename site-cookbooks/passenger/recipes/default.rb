@@ -9,20 +9,33 @@
 
 package "python-software-properties" do
   action :install
-  options "--assume-yes"
 end
 
-execute "apt-add-repository-ruby" do
-  command "apt-add-repository -y ppa:brightbox/ruby-ng"
-  not_if "dpkg --get-selections | grep -q 'nginx-full'"
-  notifies :run, "execute[apt-get-update]", :immediately
-end
-
-package "nginx-full" do
+package "apt-transport-https" do
   action :install
 end
 
-package "passenger-common1.9" do
+package "ca-certificates" do
+  action :install
+end
+
+execute "passenger-apt-key" do
+  command "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7"
+end
+
+file "/etc/apt/sources.list.d/passenger.list" do
+  content "deb https://oss-binaries.phusionpassenger.com/apt/passenger precise main"
+  owner "root"
+  group "root"
+  mode 0600
+  notifies :run, "execute[apt-get-update]", :immediately
+end
+
+package "nginx-extras" do
+  action :install
+end
+
+package "passenger" do
   action :install
 end
 

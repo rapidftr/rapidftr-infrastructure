@@ -5,7 +5,7 @@ server {
 }
 
 server {
-  listen <%= @https_port %>;
+  listen <%= @https_port %> ssl spdy;
   server_name <%= @host %>;
 
   ssl on;
