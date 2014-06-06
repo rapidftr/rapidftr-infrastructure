@@ -10,7 +10,6 @@ run_list(
 
 override_attributes(
   "rapidftr" => {
-    "repository" => "git://github.com/rdsubhas/RapidFTR.git",
-    "revision" => "release-2.0.0"
+    "repository" => "git://github.com/rdsubhas/RapidFTR.git"
   }
 )

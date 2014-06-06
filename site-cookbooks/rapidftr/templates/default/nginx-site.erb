@@ -25,7 +25,8 @@ server {
   client_max_body_size 50M;
 
   location ~ ^/assets/ {
-    expires 1y;
+    gzip_static on;
+    expires max;
     add_header Cache-Control public;
     add_header ETag "";
     break;
