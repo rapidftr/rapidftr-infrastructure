@@ -15,12 +15,7 @@ end
 execute "apt-add-repository-couchdb" do
   command "apt-add-repository ppa:nilya/couchdb-1.3"
   not_if "dpkg --get-selections | grep -q 'couchdb'"
-end
-
-# Requires a unique name from other recipes in order to run
-execute "apt-get-update-couchdb" do
-  command "apt-get update"
-  not_if "dpkg --get-selections | grep -q 'couchdb'"
+  notifies :run, "execute[apt-get-update]", :immediately
 end
 
 package "couchdb" do

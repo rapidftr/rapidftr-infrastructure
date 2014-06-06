@@ -16,12 +16,7 @@ end
 execute "apt-add-repository-firefox" do
   command "apt-add-repository 'deb http://us.archive.ubuntu.com/ubuntu/ lucid-security main'"
   not_if "dpkg --get-selections | grep -q 'firefox'"
-end
-
-# Requires a unique name from other recipes in order to run
-execute "apt-get-update-firefox" do
-  command "apt-get update"
-  not_if "dpkg --get-selections | grep -q 'firefox'"
+  notifies :run, "execute[apt-get-update]", :immediately
 end
 
 package "firefox" do
