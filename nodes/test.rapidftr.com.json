@@ -1,0 +1,12 @@
+{
+  "run_list": [
+    "role[production]"
+  ],
+  "rapidftr" : {
+    "host" : "test.rapidftr.com",
+    "rails_env" : "android"
+  },
+  "automatic": {
+    "ipaddress": "test.rapidftr.com"
+  }
+}
