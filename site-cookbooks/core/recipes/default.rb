@@ -40,6 +40,10 @@ package "zlib1g-dev" do
   action :install
 end
 
+package "nodejs" do
+  action :install
+end
+
 package "nodejs-dev" do
   action :install
 end
