@@ -31,6 +31,6 @@ package "ruby1.9.3" do
 end
 
 execute "bundler" do
-  command "gem install bundler -v 1.3.5"
-  not_if "which bundler"
+  command "gem install bundler -v 1.6.2"
+  not_if "bundle --version | grep 1.6.2"
 end
