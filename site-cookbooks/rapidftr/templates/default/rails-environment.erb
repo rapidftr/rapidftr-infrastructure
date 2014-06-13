@@ -24,6 +24,8 @@ RapidFTR::Application.configure do
     config.assets.digest = true
     config.assets.compress = true
 
+    config.force_ssl = true
+
     ENV['SOLR_PORT'] = "<%= @solr_port %>"
 
 end

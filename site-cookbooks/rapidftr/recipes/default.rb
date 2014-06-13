@@ -45,7 +45,7 @@ template "#{node.rapidftr.host}-rails-environment" do
 end
 
 execute "#{node.rapidftr.host}-bundle-install" do
-  command "bundle install --deployment"
+  command "bundle install --deployment --without=development,test,cucumber"
   cwd node.rapidftr.release_dir
   environment "RAILS_ENV" => node.rapidftr.rails_env
   path [ "/usr/local/rvm/bin" ]
@@ -73,24 +73,6 @@ end
 
 execute "#{node.rapidftr.host}-rake-asset-precompile" do
   command "bundle exec rake assets:clean assets:precompile"
-  environment "RAILS_ENV" => node.rapidftr.rails_env
-  cwd node.rapidftr.release_dir
-  path [ "/usr/local/rvm/bin" ]
-  user "www-data"
-  group "www-data"
-end
-
-execute "#{node.rapidftr.host}-rake-scheduler-restart" do
-  command "bundle exec rake scheduler:restart"
-  environment "RAILS_ENV" => node.rapidftr.rails_env
-  cwd node.rapidftr.release_dir
-  path [ "/usr/local/rvm/bin" ]
-  user "www-data"
-  group "www-data"
-end
-
-execute "#{node.rapidftr.host}-rake-sunspot-restart" do
-  command "bundle exec rake sunspot:clean_start"
   environment "RAILS_ENV" => node.rapidftr.rails_env
   cwd node.rapidftr.release_dir
   path [ "/usr/local/rvm/bin" ]
@@ -140,4 +122,19 @@ end
 
 service "nginx" do
   action :restart
+end
+
+template "#{node.rapidftr.host}-init-script" do
+  source "init-script.erb"
+  path File.join("/etc/init", "rapidftr-#{node.rapidftr.host}.conf")
+  owner "root"
+  group "root"
+  mode 0644
+  variables node.rapidftr.to_hash
+  notifies :restart, "service[rapidftr-#{node.rapidftr.host}]", :immediately
+end
+
+service "rapidftr-#{node.rapidftr.host}" do
+  action :restart
+  provider Chef::Provider::Service::Upstart
 end
