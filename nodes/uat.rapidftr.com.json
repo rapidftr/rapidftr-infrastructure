@@ -1,0 +1,11 @@
+{
+  "run_list": [
+    "role[production]"
+  ],
+  "rapidftr" : {
+    "host" : "uat.rapidftr.com"
+  },
+  "automatic": {
+    "ipaddress": "uat.rapidftr.com"
+  }
+}
