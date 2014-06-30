@@ -21,7 +21,7 @@ execute "copy-couch-config-yml-dev" do
 end
 
 execute "rake-app-migrate" do
-  command "su vagrant -l -c 'cd /vagrant && bundle exec rake couchdb:create db:seed db:migrate'"
+  command "su vagrant -l -c 'cd /vagrant && bundle exec rake db:seed db:migrate'"
 end
 
 execute "sunspot-start" do

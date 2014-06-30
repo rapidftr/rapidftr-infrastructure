@@ -33,6 +33,7 @@ end
 
 package "nginx-extras" do
   action :install
+  options "--yes --force-yes"
 end
 
 package "passenger" do

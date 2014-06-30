@@ -22,15 +22,25 @@ end
 
 execute "apt-add-repository-ruby" do
   command "apt-add-repository -y ppa:brightbox/ruby-ng"
-  not_if "dpkg --get-selections | grep -q 'ruby1.9.3'"
+  not_if "dpkg --get-selections | grep -q 'ruby2.1'"
   notifies :run, "execute[apt-get-update]", :immediately
 end
 
-package "ruby1.9.3" do
+package "ruby2.1" do
   action :install
 end
 
-execute "bundler" do
-  command "gem install bundler -v 1.6.2"
-  not_if "bundle --version | grep 1.6.2"
+package "ruby2.1-dev" do
+  action :install
+end
+
+package "ruby-switch" do
+  action :install
+end
+
+execute "ruby-switch --set ruby2.1" do
+end
+
+execute "install-bundler" do
+  command "gem2.1 install bundler --version '~> 1.6.3'"
 end
