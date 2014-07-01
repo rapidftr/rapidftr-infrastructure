@@ -21,6 +21,7 @@ server {
   rails_env <%= @rails_env %>;
   gzip on;
   gzip_disable "MSIE [1-6]\.";
+  etag off;
 
   root <%= @release_dir %>/public;
   access_log <%= @release_dir %>/log/server.log;
@@ -31,7 +32,6 @@ server {
     gzip_static on;
     expires max;
     add_header Cache-Control public;
-    add_header ETag "";
     break;
   }
 }
