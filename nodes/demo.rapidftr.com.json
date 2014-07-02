@@ -4,7 +4,8 @@
   ],
   "rapidftr" : {
     "host" : "demo.rapidftr.com",
-    "rails_env" : "demo"
+    "rails_env" : "demo",
+    "revision" : "v1.2.1"
   },
   "automatic": {
     "ipaddress": "demo.rapidftr.com"
