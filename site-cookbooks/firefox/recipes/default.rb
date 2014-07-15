@@ -9,7 +9,7 @@
 
 package "python-software-properties" do
   action :install
-  options "--assume-yes"
+  options "--no-install-recommends --yes --force-yes"
 end
 
 # Install Firefox 20 as the latest version is not compatible with the Selenium WebDriver version
@@ -22,4 +22,5 @@ end
 package "firefox" do
   action :install
   version "20.0+build1-0ubuntu0.10.04.3"
+  options "--no-install-recommends --yes --force-yes"
 end

@@ -9,22 +9,27 @@
 
 package "xfonts-cyrillic" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "xfonts-100dpi" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "xfonts-75dpi" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "xfonts-scalable" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "xvfb" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 execute "set-display" do

@@ -9,14 +9,17 @@
 
 package "python-software-properties" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "apt-transport-https" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "ca-certificates" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 execute "passenger-apt-key" do
@@ -33,11 +36,12 @@ end
 
 package "nginx-extras" do
   action :install
-  options "--yes --force-yes"
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "passenger" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 cookbook_file "/etc/nginx/conf.d/passenger.conf" do

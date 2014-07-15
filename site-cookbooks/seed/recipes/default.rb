@@ -12,6 +12,10 @@ group "rvm" do
   append true
 end
 
+execute "bundle-rubygems-mirror" do
+  command "su vagrant -l -c 'cd /vagrant && bundle config mirror.https://rubygems.org http://production.cf.rubygems.org'"
+end
+
 execute "bundle-install" do
   command "su vagrant -l -c 'cd /vagrant && NOKOGIRI_USE_SYSTEM_LIBRARIES=true bundle install'"
 end

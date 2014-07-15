@@ -9,7 +9,7 @@
 
 package "python-software-properties" do
   action :install
-  options "--assume-yes"
+  options "--no-install-recommends --yes --force-yes"
 end
 
 file "/etc/gemrc" do
@@ -28,14 +28,17 @@ end
 
 package "ruby2.1" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "ruby2.1-dev" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 package "ruby-switch" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 execute "ruby-switch --set ruby2.1" do

@@ -9,7 +9,7 @@
 
 package "python-software-properties" do
   action :install
-  options "--assume-yes"
+  options "--no-install-recommends --yes --force-yes"
 end
 
 execute "apt-add-repository-couchdb" do
@@ -20,6 +20,7 @@ end
 
 package "couchdb" do
   action :install
+  options "--no-install-recommends --yes --force-yes"
 end
 
 # Bind CouchDB to the correct port so that it can be accessed from the host
