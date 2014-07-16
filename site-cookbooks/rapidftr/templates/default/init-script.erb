@@ -5,12 +5,12 @@ stop on runlevel [016]
 
 post-start script
   cd <%= @release_dir %>
-  RAILS_ENV=<%= @rails_env %> bundle exec rake sunspot:restart
+  RAILS_ENV=<%= @rails_env %> bundle exec rake search:restart
   RAILS_ENV=<%= @rails_env %> bundle exec rake scheduler:restart
 end script
 
 pre-stop script
   cd <%= @release_dir %>
-  RAILS_ENV=<%= @rails_env %> bundle exec rake sunspot:stop
+  RAILS_ENV=<%= @rails_env %> bundle exec rake search:stop
   RAILS_ENV=<%= @rails_env %> bundle exec rake scheduler:stop
 end script
