@@ -13,7 +13,7 @@ user 'www-data' do
   gid 'www-data'
 end
 
-[ "", "shared", "shared/log", "shared/pids", "shared/gems" ].each do |dir|
+[ "", "shared", "shared/log", "shared/pids", "shared/gems", "shared/solrdata" ].each do |dir|
   directory "#{node.rapidftr.host}-rapidftr-shared-#{dir}" do
     owner 'www-data'
     group 'www-data'
@@ -31,7 +31,7 @@ deploy_revision "#{node.rapidftr.host}-rapidftr-git" do
   user "www-data"
   group "www-data"
   shallow_clone true
-  symlinks "pids" => "tmp/pids", "log" => "log", "gems" => "vendor/bundle"
+  symlinks "pids" => "tmp/pids", "log" => "log", "gems" => "vendor/bundle", "solrdata" => "solr/data"
   environment "RAILS_ENV" => node.rapidftr.rails_env
 end
 
