@@ -44,15 +44,6 @@ template "#{node.rapidftr.host}-rails-environment" do
   variables node.rapidftr.to_hash
 end
 
-execute "xyz-path" do
-  command "echo $PATH"
-  cwd node.rapidftr.release_dir
-  environment "RAILS_ENV" => node.rapidftr.rails_env
-  path [ "/usr/local/rvm/bin" ]
-  user "www-data"
-  group "www-data"
-end
-
 execute "#{node.rapidftr.host}-bundle-install" do
   command "bundle install --deployment --without=development,test,cucumber"
   cwd node.rapidftr.release_dir

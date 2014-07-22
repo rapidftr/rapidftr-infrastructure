@@ -29,7 +29,7 @@ execute "rake-app-migrate" do
 end
 
 execute "sunspot-start" do
-  command "su vagrant -l -c 'cd /vagrant && bundle exec rake sunspot:solr:restart'"
+  command "su vagrant -l -c 'cd /vagrant && bundle exec rake sunspot:solr:start'"
 end
 
 execute "scheduler-start" do
