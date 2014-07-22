@@ -5,6 +5,7 @@ run_list(
   "recipe[couchdb]",
   "recipe[xvfb]",
   "recipe[firefox]",
+  "recipe[phantomjs]",
   "recipe[rvm]",
   "recipe[seed]"
 )
