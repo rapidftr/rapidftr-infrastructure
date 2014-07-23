@@ -18,15 +18,14 @@ docker_image node.rapidftr.image do
   action :pull
   tag node.rapidftr.tag
   cmd_timeout 30*60
-  notifies :redeploy, "docker_container[#{node.rapidftr.image}]"
-  notifies :run, "rapidftr[docker-clean-unused-images]"
+  notifies :redeploy, "docker_container[#{node.rapidftr.image}]", :immediately
 end
 
 docker_container node.rapidftr.image do
   action :run
   tag node.rapidftr.tag
   container_name node.rapidftr.instance
-  port [ '80:80', '443:443', '6984:6984' ]
+  port %w(80:80 443:443 6984:6984)
   volume "/data/#{node.rapidftr.instance}:/data"
   detach true
   cmd_timeout 5*60
@@ -34,6 +33,6 @@ end
 
 execute "docker-clean-unused-images" do
   action :run
-  command "docker images | grep -e '^<none>' | sed -E 's/<none> *<none> *([0-9a-z]+) *.*/\1/g' | xargs -I {} docker rmi {}"
+  command "docker images | grep -e '^<none>' | sed -E 's/<none> *<none> *([0-9a-z]+) *.*/\\1/g' | xargs -I {} docker rmi {}"
   ignore_failure true
 end
