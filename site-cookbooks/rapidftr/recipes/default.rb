@@ -27,5 +27,5 @@ docker_container node.rapidftr.image do
   container_name node.rapidftr.instance
   port [ '80:80', '443:443', '6984:6984' ]
   volume "/data/#{node.rapidftr.instance}:/data"
-  cmd_timeout 10*60
+  detach true
 end
