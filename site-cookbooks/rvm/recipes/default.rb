@@ -29,7 +29,3 @@ execute "rvm-ruby-2.1.2" do
   command "sudo sh -c '/usr/local/rvm/bin/rvm install ruby-2.1.2'"
   not_if { ::File.exists? "/usr/local/rvm/rubies/ruby-2.1.2/bin/ruby" }
 end
-
-file "/etc/profile.d/ruby-opts.sh" do
-  action :delete
-end

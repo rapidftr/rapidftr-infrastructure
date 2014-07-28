@@ -10,6 +10,10 @@
 # 'apt-get update' is required before installing packages
 execute "apt-get-update" do
   command "apt-get update"
+  only_if do
+    update_file = '/var/lib/apt/periodic/update-success-stamp'
+    File.exists?(update_file) && File.mtime(update_file) < (Time.now - 60*60*24)
+  end
 end
 
 package "build-essential" do
