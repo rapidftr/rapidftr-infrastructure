@@ -1,11 +1,11 @@
-xvfb CHANGELOG
-==============
+rapidftr-dev CHANGELOG
+======================
 
-This file is used to list changes made in each version of the xvfb cookbook.
+This file is used to list changes made in each version of the rapidftr-dev cookbook.
 
 0.1.0
 -----
-- [your_name] - Initial release of xvfb
+- [your_name] - Initial release of rapidftr-dev
 
 - - -
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
