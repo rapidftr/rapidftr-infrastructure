@@ -19,7 +19,6 @@ cookbook_file "/etc/couchdb/local.d/rapidftr.ini" do
   mode 0755
 end
 
-service "couchdb" do
-  action :start
-  provider Chef::Provider::Service::Upstart
+execute "restart-couchdb" do
+  command "service couchdb restart"
 end
