@@ -9,16 +9,3 @@ run_list(
   "recipe[rvm]",
   "recipe[seed]"
 )
-
-override_attributes(
-  "couch_db" => {
-    "config" => {
-      "httpd" => {
-        "bind_address" => "0.0.0.0"
-      },
-      "admins" => {
-        "rapidftr" => "rapidftr"
-      }
-    }
-  }
-)

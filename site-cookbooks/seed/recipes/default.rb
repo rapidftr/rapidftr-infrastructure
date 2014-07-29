@@ -13,7 +13,7 @@ group "rvm" do
 end
 
 execute "bundle-install" do
-  command "su vagrant -l -c 'cd /vagrant && NOKOGIRI_USE_SYSTEM_LIBRARIES=true bundle install'"
+  command "su vagrant -l -c 'cd /vagrant && bundle install'"
 end
 
 execute "copy-couch-config-yml-dev" do
