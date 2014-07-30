@@ -1,11 +1,13 @@
 FROM ubuntu:14.04
 
+# Add Build Essentials
 RUN (ln -s -f /bin/true /usr/bin/chfn) && \
     (apt-get update) && \
-    (apt-get install -y --no-install-recommends openjdk-7-jdk build-essential git openssh-client wget curl) && \
+    (apt-get install -y --no-install-recommends openjdk-7-jdk build-essential git openssh-client curl) && \
     (apt-get clean) && \
     (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
 
+# Install Jenkins from Stable repo
 RUN (curl http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key | apt-key add -) && \
     (echo deb http://pkg.jenkins-ci.org/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list) && \
     (apt-get update) && \
