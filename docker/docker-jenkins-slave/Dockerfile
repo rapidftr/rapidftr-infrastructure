@@ -7,25 +7,8 @@ RUN (ln -s -f /bin/true /usr/bin/chfn) && \
     (apt-get clean) && \
     (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
 
-# Add OpenSSH Server
-RUN (apt-get update) && \
-    (apt-get install -y --no-install-recommends openssh-server) && \
-    (mkdir -p /var/run/sshd) && \
-    (sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd) && \
-    (apt-get clean) && \
-    (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
+# Download Swarm CLI
+ADD http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/1.16/swarm-client-1.16-jar-with-dependencies.jar /usr/local/bin/swarm-client.jar
 
-# Add Jenkins User
-RUN (adduser --disabled-password --quiet --gecos "" jenkins) && \
-    (echo "jenkins:jenkins" | chpasswd) && \
-    (echo 'jenkins ALL = NOPASSWD: ALL' > /etc/sudoers.d/jenkins)
-
-# Add Jenkins user to the sudoers
-RUN (apt-get update) && \
-    (apt-get install -y --no-install-recommends sudo) && \
-    (echo 'jenkins ALL = NOPASSWD: ALL' > /etc/sudoers.d/jenkins) && \
-    (apt-get clean) && \
-    (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
-
-EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["java", "-jar", "/usr/local/bin/swarm-client.jar"]
+CMD []
