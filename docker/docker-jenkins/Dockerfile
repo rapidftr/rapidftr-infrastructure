@@ -15,6 +15,7 @@ RUN (curl http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key | apt-key a
     (apt-get clean) && \
     (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
 
+ENV JENKINS_HOME /var/lib/jenkins
 VOLUME /var/lib/jenkins
 EXPOSE 8080
 

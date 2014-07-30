@@ -5,6 +5,6 @@
 # Once that fix is merged (tentative - Aug 2014 1st week release)
 # We should change this to exec su jenkins -c "java -jar ..."
 
-mkdir -p /var/lib/jenkins
-chown -R root:root /var/lib/jenkins
+mkdir -p $JENKINS_HOME
+chown -R root:root $JENKINS_HOME
 java -jar /usr/share/jenkins/jenkins.war
