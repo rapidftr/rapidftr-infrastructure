@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# TODO: Because of the "su" docker bug - https://github.com/dotcloud/docker/issues/6345
+# We are unable to run this as jenkins user
+# Once that fix is merged (tentative - Aug 2014 1st week release)
+# We should change this to exec su jenkins -c "java -jar ..."
+
 mkdir -p /var/lib/jenkins
-chown -R jenkins /var/lib/jenkins
-exec su jenkins -c "java -jar /usr/share/jenkins/jenkins.war"
+chown -R root:root /var/lib/jenkins
+java -jar /usr/share/jenkins/jenkins.war

@@ -1,11 +1,7 @@
-#
-# Cookbook Name:: rapidftr
-# Recipe:: default
-#
-# Copyright 2014, YOUR_COMPANY_NAME
-#
-# All rights reserved - Do Not Redistribute
-#
+# TODO: Random ordering errors with the "stop/remove/redeploy"
+# Sometimes it says "remove failed because container is still running"
+# Whereas "stop" should have already happened!
+# Need to follow up on chef-docker
 
 include_recipe 'docker'
 
@@ -18,9 +14,7 @@ docker_image node.rapidftr.image do
   action :pull
   tag node.rapidftr.tag
   cmd_timeout 30*60
-  notifies :stop, "docker_container[#{node.rapidftr.instance}]", :immediately
-  notifies :remove, "docker_container[#{node.rapidftr.instance}]", :immediately
-  notifies :run, "docker_container[#{node.rapidftr.instance}]", :immediately
+  notifies :redeploy, "docker_container[#{node.rapidftr.instance}]", :immediately
 end
 
 docker_container node.rapidftr.instance do
@@ -31,7 +25,8 @@ docker_container node.rapidftr.instance do
   port %w(80:80 443:443 6984:6984)
   volume "/data/#{node.rapidftr.instance}:/data"
   detach true
-  cmd_timeout 5*60
+  force true
+  cmd_timeout 10*60
 end
 
 execute "docker-clean-unused-images" do
