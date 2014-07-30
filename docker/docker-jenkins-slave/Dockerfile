@@ -16,7 +16,7 @@ RUN (apt-get update) && \
     (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
 
 # Add Jenkins User
-RUN (adduser --no-create-home --quiet --disabled-password --gecos "" jenkins) && \
+RUN (adduser --disabled-password --quiet --gecos "" jenkins) && \
     (echo "jenkins:jenkins" | chpasswd) && \
     (echo 'jenkins ALL = NOPASSWD: ALL' > /etc/sudoers.d/jenkins)
 
