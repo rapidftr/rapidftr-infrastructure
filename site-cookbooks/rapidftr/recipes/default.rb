@@ -14,7 +14,9 @@ docker_image node.rapidftr.image do
   action :pull
   tag node.rapidftr.tag
   cmd_timeout 30*60
-  notifies :redeploy, "docker_container[#{node.rapidftr.instance}]", :immediately
+  notifies :stop, "docker_container[#{node.rapidftr.instance}]", :immediately
+  notifies :remove, "docker_container[#{node.rapidftr.instance}]", :immediately
+  notifies :run, "docker_container[#{node.rapidftr.instance}]", :immediately
 end
 
 docker_container node.rapidftr.instance do
