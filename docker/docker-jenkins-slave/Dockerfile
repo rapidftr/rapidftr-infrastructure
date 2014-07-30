@@ -3,7 +3,7 @@ FROM ubuntu:14.04
 # Add Build Essentials
 RUN (ln -s -f /bin/true /usr/bin/chfn) && \
     (apt-get update) && \
-    (apt-get install -y --no-install-recommends openjdk-7-jdk build-essential git openssh-client wget curl) && \
+    (apt-get install -y --no-install-recommends openjdk-7-jdk build-essential git openssh-client curl) && \
     (apt-get clean) && \
     (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
 
@@ -16,7 +16,7 @@ RUN (apt-get update) && \
     (rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*)
 
 # Add Jenkins User
-RUN (adduser --quiet jenkins) && \
+RUN (adduser --no-create-home --quiet --disabled-password --gecos "" jenkins) && \
     (echo "jenkins:jenkins" | chpasswd) && \
     (echo 'jenkins ALL = NOPASSWD: ALL' > /etc/sudoers.d/jenkins)
 
