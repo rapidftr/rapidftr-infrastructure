@@ -18,19 +18,19 @@ docker_image node.rapidftr.image do
   action :pull
   tag node.rapidftr.tag
   cmd_timeout 30*60
-  notifies :stop, "docker_container[#{node.rapidftr.image}]", :immediately
-  notifies :remove, "docker_container[#{node.rapidftr.image}]", :immediately
-  notifies :run, "docker_container[#{node.rapidftr.image}]", :immediately
+  notifies :stop, "docker_container[#{node.rapidftr.instance}]", :immediately
+  notifies :remove, "docker_container[#{node.rapidftr.instance}]", :immediately
+  notifies :run, "docker_container[#{node.rapidftr.instance}]", :immediately
 end
 
-docker_container node.rapidftr.image do
+docker_container node.rapidftr.instance do
   action :run
+  image node.rapidftr.image
   tag node.rapidftr.tag
   container_name node.rapidftr.instance
   port %w(80:80 443:443 6984:6984)
   volume "/data/#{node.rapidftr.instance}:/data"
   detach true
-  force true
   cmd_timeout 5*60
 end
 
