@@ -18,6 +18,7 @@ RUN (curl http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key | apt-key a
 ENV JENKINS_HOME /var/lib/jenkins
 VOLUME /var/lib/jenkins
 EXPOSE 8080
+EXPOSE 8443
 
 ADD run /usr/bin/jenkins
 CMD ["/usr/bin/jenkins"]

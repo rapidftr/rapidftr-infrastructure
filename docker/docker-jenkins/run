@@ -7,4 +7,23 @@
 
 mkdir -p $JENKINS_HOME
 chown -R root:root $JENKINS_HOME
-java -jar /usr/share/jenkins/jenkins.war
+
+# Generate SSL keys
+SSL_CRT="$JENKINS_HOME/certificate.crt"
+SSL_KEY="$JENKINS_HOME/certificate.key"
+if [ ! -f $SSL_CRT ]; then
+  echo "********************************************"
+  echo "********************************************"
+  echo "***  WARNING:  NO SSL CERTIFICATE FOUND  ***"
+  echo "*** GENERATING A SELF-SIGNED CERTIFICATE ***"
+  echo "***    PLEASE USE A PROPER CERTIFICATE   ***"
+  echo "********************************************"
+  echo "********************************************"
+  openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=XX/ST=FIXME/L=FIXME/O=FIXME/CN=FIXME" -keyout $SSL_KEY -out $SSL_CRT
+fi
+
+# Jenkins doesn't automatically read OpenSSL crt/key files, needs to be packed into a JKS (Java KeyStore)
+openssl pkcs12 -inkey $SSL_KEY -in $SSL_CRT -export -out keys.pkcs12 -password pass:TemporaryPassword
+keytool -importkeystore -srckeystore keys.pkcs12 -srcstoretype pkcs12 -destkeystore mykeystore -srcstorepass TemporaryPassword -deststorepass TemporaryPassword -noprompt
+
+java -jar /usr/share/jenkins/jenkins.war --httpPort=8080 --httpsPort=8443 --httpsKeyStore=mykeystore --httpsKeyStorePassword=TemporaryPassword
