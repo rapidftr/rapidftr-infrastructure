@@ -1,0 +1,2 @@
+nginx: nginx
+dockergen: docker-gen -watch -only-exposed -notify /app/reload.sh /app/nginx.tmpl /etc/nginx/sites-enabled/default
