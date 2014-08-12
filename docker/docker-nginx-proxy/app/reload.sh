@@ -1,7 +1,9 @@
 #!/bin/bash
 set -xe
 
-hosts=`cat /etc/nginx/sites-enabled/default | grep -E 'upstream (.+) \{' | sed -E 's/upstream (.+) \{/\\1/g'`
+hosts=`grep '# CONFIGURATION FOR' /etc/nginx/sites-enabled/default | awk '{ print $NF }'`
+echo "$hosts" > /data/known_hosts
+
 for host in $hosts; do
   # Check and create SSL key
   hostdir=/data/$host
