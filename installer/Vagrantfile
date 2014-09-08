@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = '2'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = 'ubuntu/trusty64'
+
+  config.vm.define "linux-dev", primary: true do |vm|
+    vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      wget -qO- https://get.docker.io/ | sh
+
+      cd /vagrant
+      mkdir -p artifacts artifacts/apt
+
+      docker pull rapidftr/rapidftr:latest
+      (docker rm -f rapidftr || echo) >/dev/null 2>&1
+      docker run --entrypoint /bin/echo --name rapidftr rapidftr/rapidftr:latest
+      docker export rapidftr | gzip -c > artifacts/rapidftr-image.tar.gz
+
+      cp /var/cache/apt/archives/*.deb artifacts/apt/
+    SCRIPT
+  end
+
+  config.vm.define "linux-test", autostart: false do |vm|
+    config.vm.network :forwarded_port, host: 8443, guest: 443
+    config.vm.network :forwarded_port, host: 8080, guest: 80
+    config.vm.network :forwarded_port, host: 6984, guest: 6984
+
+    config.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      # Simulate offline
+      echo "nameserver 127.0.0.1" > /etc/resolv.conf
+      cd /vagrant
+      ./install.sh
+    SCRIPT
+  end
+
+end
