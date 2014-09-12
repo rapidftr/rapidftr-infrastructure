@@ -8,8 +8,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = 'ubuntu/trusty64'
 
-  config.vm.define "linux-dev", primary: true do |vm|
-    vm.provision :shell, privileged: true, inline: <<-SCRIPT
+  config.vm.define "linux-dev", primary: true do |dev|
+    dev.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       wget -qO- https://get.docker.io/ | sh
 
       cd /vagrant
@@ -24,12 +24,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     SCRIPT
   end
 
-  config.vm.define "linux-test", autostart: false do |vm|
-    config.vm.network :forwarded_port, host: 8443, guest: 443
-    config.vm.network :forwarded_port, host: 8080, guest: 80
-    config.vm.network :forwarded_port, host: 6984, guest: 6984
+  config.vm.define "linux-test", autostart: false do |test|
+    test.vm.network :forwarded_port, host: 8443, guest: 443
+    test.vm.network :forwarded_port, host: 8080, guest: 80
+    test.vm.network :forwarded_port, host: 6984, guest: 6984
 
-    config.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+    test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       # Simulate offline
       echo "nameserver 127.0.0.1" > /etc/resolv.conf
       cd /vagrant
