@@ -10,17 +10,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "linux-dev", primary: true do |dev|
     dev.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      apt-get update
       wget -qO- https://get.docker.io/ | sh
 
       cd /vagrant
-      mkdir -p artifacts artifacts/apt
+      mkdir -p artifacts artifacts/apt artifacts/image
 
       docker pull rapidftr/rapidftr:latest
       (docker rm -f rapidftr || echo) >/dev/null 2>&1
       docker run --entrypoint /bin/echo --name rapidftr rapidftr/rapidftr:latest
-      docker export rapidftr | gzip -c > artifacts/rapidftr-image.tar.gz
+      docker export rapidftr | gzip -c > artifacts/image/rapidftr.tar.gz
 
       cp /var/cache/apt/archives/*.deb artifacts/apt/
+      cp install.sh artifacts/
     SCRIPT
   end
 
@@ -32,7 +34,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       # Simulate offline
       echo "nameserver 127.0.0.1" > /etc/resolv.conf
-      cd /vagrant
+      cd /vagrant/artifacts
       ./install.sh
     SCRIPT
   end

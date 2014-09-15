@@ -18,7 +18,7 @@ install_docker() {
     sh $BASEDIR/docker.sh
   elif grep 'Ubuntu 14.04' /etc/lsb-release; then
     echo "Installing Docker offline..."
-    dpkg -i $BASEDIR/artifacts/apt/*.deb
+    dpkg -i $BASEDIR/apt/*.deb
   else
     echo "Please connect to the internet to install Docker online"
     echo "Or use Ubuntu 14.04 to install Docker offline"
@@ -45,7 +45,7 @@ remove_rapidftr() {
 
 install_rapidftr() {
   echo "Installing RapidFTR..."
-  docker import - rapidftr < artifacts/rapidftr-image.tar.gz
+  docker import - rapidftr < image/rapidftr.tar.gz
   docker run -d -v $DATADIR:/data -e RAILS_ENV=production -p 80:80 -p 443:443 -p 6984:6984 -t --name rapidftr rapidftr /sbin/my_init
 }
 
