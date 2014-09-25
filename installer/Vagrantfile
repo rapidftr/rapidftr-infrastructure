@@ -14,12 +14,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       wget -qO- https://get.docker.io/ | sh
 
       cd /vagrant
-      mkdir -p artifacts artifacts/apt artifacts/image
+      mkdir -p artifacts artifacts/apt
 
       docker pull rapidftr/rapidftr:latest
       (docker rm -f rapidftr || echo) >/dev/null 2>&1
       docker run --entrypoint /bin/echo --name rapidftr rapidftr/rapidftr:latest
-      docker export rapidftr | gzip -c > artifacts/image/rapidftr.tar.gz
+      docker export rapidftr | gzip -c > artifacts/rapidftr-image.tar.gz
 
       cp /var/cache/apt/archives/*.deb artifacts/apt/
       cp install.sh artifacts/
