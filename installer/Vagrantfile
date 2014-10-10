@@ -23,6 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       cp /var/cache/apt/archives/*.deb artifacts/apt/
       cp install.sh artifacts/
+      cp rapidftr.sh artifacts/
     SCRIPT
   end
 
