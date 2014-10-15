@@ -121,3 +121,6 @@ Session.vim
 /cookbooks/
 /installer/artifacts/
 /installer/*.zip
+*.exe
+*.ova
+*.iso
