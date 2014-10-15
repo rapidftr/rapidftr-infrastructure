@@ -28,6 +28,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "linux-test", autostart: false do |test|
+    test.vm.provider :virtualbox do |vb|
+        vb.name = "winrapidftr"
+    end
+
     test.vm.network :forwarded_port, host: 8443, guest: 443
     test.vm.network :forwarded_port, host: 8080, guest: 80
     test.vm.network :forwarded_port, host: 6984, guest: 6984
@@ -40,4 +44,36 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     SCRIPT
   end
 
+  config.vm.define "linux-windows-installer", autostart: false do |installer|
+
+    installer.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      apt-get update
+      apt-get -y install scons g++ zlib1g-dev unzip
+
+      mkdir /root/packages
+      cd /root/packages
+      wget -O nsis-3.0b1-src.tar.bz2 http://sourceforge.net/projects/nsis/files/NSIS%203%20Pre-release/3.0b1/nsis-3.0b1-src.tar.bz2/download
+      wget -O nsis-3.0b1.zip http://sourceforge.net/projects/nsis/files/NSIS%203%20Pre-release/3.0b1/nsis-3.0b1.zip/download
+
+      tar xvfj nsis-3.0b1-src.tar.bz2
+      unzip nsis-3.0b1.zip
+
+      cd nsis-3.0b1-src/
+      scons SKIPSTUBS=all SKIPPLUGINS=all SKIPUTILS=all SKIPMISC=all NSIS_CONFIG_CONST_DATA_PATH=no PREFIX=/usr/local install-compiler
+
+      rm -rf /usr/local/nsis
+      cp -r /root/packages/nsis-3.0b1 /usr/local/share/nsis
+
+    SCRIPT
+  end
+
+  config.vm.define "windows-test", autostart: false do |windows|
+    windows.vm.guest = :windows
+    windows.vm.box="windows7"
+    windows.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
+    windows.vm.network :forwarded_port, guest: 80, host: 8080
+    windows.vm.provider :virtualbox do |vb|
+        vb.gui = true
+    end
+  end
 end
