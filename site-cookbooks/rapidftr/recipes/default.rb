@@ -24,7 +24,7 @@ docker_container node.rapidftr.instance do
   image node.rapidftr.image
   tag node.rapidftr.tag
   container_name node.rapidftr.instance
-  port %w(80:80 443:443 6984:6984 5984:5984)
+  port %w(80:80 443:443 6984:6984)
   volume "/data/#{node.rapidftr.instance}:/data"
   detach true
   force true

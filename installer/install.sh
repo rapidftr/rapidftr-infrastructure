@@ -46,7 +46,7 @@ remove_rapidftr() {
 install_rapidftr() {
   echo "Installing RapidFTR..."
   docker import - rapidftr < rapidftr-image.tar.gz
-  docker run -d -v $DATADIR:/data -e RAILS_ENV=production -p 80:80 -p 443:443 -p 6984:6984 -p 5984:5984 -t --name rapidftr rapidftr /sbin/my_init
+  docker run -d -v $DATADIR:/data -e RAILS_ENV=production -p 80:80 -p 443:443 -p 6984:6984 -t --name rapidftr rapidftr /sbin/my_init
   sudo cp -f $BASEDIR/rapidftr.sh /etc/init.d/rapidftr
   sudo chmod +=rwx /etc/init.d/rapidftr
   sudo update-rc.d rapidftr defaults
