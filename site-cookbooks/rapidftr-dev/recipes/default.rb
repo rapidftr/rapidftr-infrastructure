@@ -16,7 +16,7 @@ execute "apt-update" do
   command "apt-get update"
 end
 
-%w(build-essential git openjdk-7-jdk libxml2-dev libxslt1-dev imagemagick zlib1g-dev couchdb xfonts-cyrillic xfonts-100dpi xfonts-75dpi xfonts-scalable xvfb ruby2.1 ruby2.1-dev nodejs phantomjs curl wget).each do |pkg|
+%w(build-essential git openjdk-7-jdk libxml2-dev libxslt1-dev imagemagick zlib1g-dev couchdb xfonts-cyrillic xfonts-100dpi xfonts-75dpi xfonts-scalable xvfb ruby2.1 ruby2.1-dev nodejs phantomjs curl wget imagemagick libmagickcore-dev libmagickwand-dev).each do |pkg|
   package pkg do
     action :install
     options "--no-install-recommends --yes"
