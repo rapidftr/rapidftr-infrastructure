@@ -4,6 +4,7 @@ VOLUME /data
 EXPOSE 80
 EXPOSE 443
 EXPOSE 6984
+EXPOSE 5984
 
 COPY app/provision.sh /app/
 RUN /app/provision.sh

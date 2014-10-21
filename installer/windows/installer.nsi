@@ -81,20 +81,9 @@ UninstallText "This will uninstall RapidFTR"
 Section "Uninstall"
     ;LogSet on
     StrCpy $vmname "winrapidftr"
-
     ReadRegStr $0 HKLM "SOFTWARE\Oracle\VirtualBox" "InstallDir"
-
-    ExecWait '"$0\VBoxManage.exe" list vms | findstr /R /C:"$vmname"' $previous_installation
-
-    ${If} $previous_installation <> ""
-        ExecWait '"$0\VBoxManage.exe" list runningvms | findstr /R /C:"$vmname"' $running
-
-        ${If} $running <> ""
-            ExecWait '"$0\VBoxManage.exe" controlvm $vmname poweroff'
-        ${EndIf}
-
-        ExecWait '"$0\VBoxManage.exe" unregistervm --delete $vmname'
-    ${EndIf}
+    nsExec::Exec '"$0\VBoxManage.exe" controlvm $vmname poweroff'
+    nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
 
     ;delete all files from the installation directory
     RMDir /r "$INSTDIR\*.*"
