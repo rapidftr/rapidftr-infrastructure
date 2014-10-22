@@ -123,3 +123,4 @@ Session.vim
 /installer/*.zip
 *.exe
 *.ova
+*.iso

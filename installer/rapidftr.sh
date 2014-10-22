@@ -15,11 +15,6 @@
 PROG="rapidftr"
 
 start() {
-    # Wait for docker to finish starting up first.
-    FILE=/var/run/docker.sock
-    while [ ! -e $FILE ] ; do
-        inotifywait -t 2 -e create $(dirname $FILE)
-    done
     docker start rapidftr
     echo "$PROG started"
 }

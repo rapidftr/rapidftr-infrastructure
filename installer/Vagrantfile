@@ -30,6 +30,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "linux-test", autostart: false do |test|
     test.vm.provider :virtualbox do |vb|
         vb.name = "winrapidftr"
+        vb.cpus = 1
+        vb.memory = 1024
+        vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
     end
 
     test.vm.network :forwarded_port, host: 8443, guest: 443
@@ -37,6 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     test.vm.network :forwarded_port, host: 6984, guest: 6984
 
     test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+
       # Simulate offline
       echo "nameserver 127.0.0.1" > /etc/resolv.conf
       cd /vagrant/artifacts
@@ -64,16 +68,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       rm -rf /usr/local/nsis
       cp -r /root/packages/nsis-3.0b1 /usr/local/share/nsis
 
+      makensis /vagrant/windows/installer.nsi
     SCRIPT
-  end
-
-  config.vm.define "windows-test", autostart: false do |windows|
-    windows.vm.guest = :windows
-    windows.vm.box="windows7"
-    windows.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
-    windows.vm.network :forwarded_port, guest: 80, host: 8080
-    windows.vm.provider :virtualbox do |vb|
-        vb.gui = true
-    end
   end
 end
