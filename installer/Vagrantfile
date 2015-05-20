@@ -48,6 +48,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     SCRIPT
   end
 
+  config.vm.define "linux-rapidreg-dev", autostart: false do |dev|
+    dev.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      apt-get update
+      apt-get update
+      wget -qO- https://get.docker.io/ | sh
+
+      cd /vagrant
+      mkdir -p artifacts artifacts/rapidreg/apt
+
+      docker pull rapidreg/rapidreg:latest
+      (docker rm -f rapidreg || echo) >/dev/null 2>&1
+      docker run --entrypoint /bin/echo --name rapidreg rapidreg/rapidreg:latest
+      docker export rapidreg | gzip -c > artifacts/rapidreg-image.tar.gz
+
+      cp /var/cache/apt/archives/*.deb artifacts/rapidreg/apt
+      cp rapidreg-install.sh artifacts/rapidreg/
+      cp rapidreg.sh artifacts/rapidreg/
+    SCRIPT
+  end
+
   config.vm.define "linux-windows-installer", autostart: false do |installer|
 
     installer.vm.provision :shell, privileged: true, inline: <<-SCRIPT
