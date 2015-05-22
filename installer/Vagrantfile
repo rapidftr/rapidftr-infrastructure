@@ -60,11 +60,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       docker pull rapidreg/rapidreg:latest
       (docker rm -f rapidreg || echo) >/dev/null 2>&1
       docker run --entrypoint /bin/echo --name rapidreg rapidreg/rapidreg:latest
-      docker export rapidreg | gzip -c > artifacts/rapidreg-image.tar.gz
+      docker export rapidreg | gzip -c > artifacts/rapidreg/rapidreg-image.tar.gz
 
       cp /var/cache/apt/archives/*.deb artifacts/rapidreg/apt
       cp rapidreg-install.sh artifacts/rapidreg/
       cp rapidreg.sh artifacts/rapidreg/
+    SCRIPT
+  end
+
+  config.vm.define "linux-rapidreg-test", autostart: false do |test|
+    test.vm.network :forwarded_port, host: 8443, guest: 443
+    test.vm.network :forwarded_port, host: 8080, guest: 80
+    test.vm.network :forwarded_port, host: 6984, guest: 6984
+
+    test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      #Simulate offline
+      echo "nameserver 127.0.0.1" > /etc/resolv.conf
+      cd /vagrant/artifacts/rapidreg
+      ./rapidreg-install.sh
     SCRIPT
   end
 
