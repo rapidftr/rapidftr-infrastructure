@@ -1,6 +1,6 @@
 SCRIPT=$(readlink -f "$0")
 BASEDIR=$(dirname $SCRIPT)
-DATADIR="/data/rapidftr"
+DATADIR="/data/rapidreg"
 
 install_docker() {
   echo "Checking if we can install Docker online..."
