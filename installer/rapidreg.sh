@@ -13,10 +13,11 @@
 ### END INIT INFO
 
 PROG="rapidreg"
+DATADIR="/data/rapidreg"
 
 start() {
-    docker start $PROG
-    echo "$PROG started"
+  docker run -d -v $DATADIR:/data -e RAILS_ENV=production -e ENQUIRIES_FEATURE=off -p 80:80 -p 443:443 -p 6984:6984 -t --name rapidreg $PROG /sbin/my_init || docker start $PROG
+  echo "$PROG started"
 }
 
 stop() {
