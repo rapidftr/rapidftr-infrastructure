@@ -52,21 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     installer.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       apt-get update
-      apt-get -y install scons g++ zlib1g-dev unzip
-
-      mkdir /root/packages
-      cd /root/packages
-      wget -O nsis-3.0b1-src.tar.bz2 http://sourceforge.net/projects/nsis/files/NSIS%203%20Pre-release/3.0b1/nsis-3.0b1-src.tar.bz2/download
-      wget -O nsis-3.0b1.zip http://sourceforge.net/projects/nsis/files/NSIS%203%20Pre-release/3.0b1/nsis-3.0b1.zip/download
-
-      tar xvfj nsis-3.0b1-src.tar.bz2
-      unzip nsis-3.0b1.zip
-
-      cd nsis-3.0b1-src/
-      scons SKIPSTUBS=all SKIPPLUGINS=all SKIPUTILS=all SKIPMISC=all NSIS_CONFIG_CONST_DATA_PATH=no PREFIX=/usr/local install-compiler
-
-      rm -rf /usr/local/nsis
-      cp -r /root/packages/nsis-3.0b1 /usr/local/share/nsis
+      apt-get -y install scons g++ zlib1g-dev unzip nsis
 
       makensis /vagrant/windows/installer.nsi
     SCRIPT
