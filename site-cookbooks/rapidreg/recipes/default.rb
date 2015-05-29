@@ -10,6 +10,10 @@ directory "/data/#{node.rapidftr.instance}" do
   recursive true
 end
 
+execute "restart-docker-service" do
+  command "service docker restart"
+end
+
 docker_image node.rapidftr.image do
   action :pull
   tag node.rapidftr.tag
