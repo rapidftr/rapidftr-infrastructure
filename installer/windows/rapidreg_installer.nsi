@@ -75,6 +75,11 @@ Section "Installing RapidReg"
     FileClose $9
 
     CreateShortCut "$SMPROGRAMS\RapidReg\StopRapidReg.lnk" "$INSTDIR\stop.bat" "" "$INSTDIR\stop.bat" 0 SW_SHOWNORMAL
+
+    ;registry entry for the add/remove programs in the control panel
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RapidReg" "DisplayName" "RapidReg - Child Registration"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RapidReg" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+
 SectionEnd
 
 UninstallText "This will uninstall RapidReg"
@@ -100,6 +105,7 @@ Section "Uninstall"
     Delete "$SMSTARTUP\StartRapidReg.lnk"
 
     DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "WinRapidReg"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RapidReg"
 
     nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
 SectionEnd
