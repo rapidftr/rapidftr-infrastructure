@@ -44,6 +44,7 @@ Section "Installing RapidReg"
     nsExec::Exec '"$0\VBoxManage.exe" import winrapidreg.ova'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "http,tcp,0.0.0.0,80,,80"'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "https,tcp,0.0.0.0,443,,443"'
+    nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "couchdb,tcp,0.0.0.0,6984,,6984"'
     nsExec::Exec '"$0\VBoxManage.exe" startvm $vmname --type headless'
 
     ;create start-menu items
@@ -83,21 +84,24 @@ Section "Uninstall"
     StrCpy $vmname "winrapidreg"
     ReadRegStr $0 HKLM "SOFTWARE\Oracle\VirtualBox" "InstallDir"
     nsExec::Exec '"$0\VBoxManage.exe" controlvm $vmname poweroff'
-    nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
-
-    ;delete all files from the installation directory
-    RMDir /r "$INSTDIR\*.*"
 
     ;remove the installation directory
-    RMDir /r $INSTDIR
-    RMDir /r "$PROGRAMFILES\RapidReg"
+    RMDir /r /REBOOTOK "$PROGRAMFILES\RapidReg"
 
     ;remove the startmenu directory for the application
+    SetShellVarContext current
     Delete "$SMPROGRAMS\RapidReg\*.*"
-    RMDir /r "$SMPROGRAMS\RapidReg"
+    RMDir /r /REBOOTOK "$SMPROGRAMS\RapidReg"
+    Delete "$SMSTARTUP\StartRapidReg.lnk"
+
+    SetShellVarContext all
+    Delete "$SMPROGRAMS\RapidReg\*.*"
+    RMDir /r /REBOOTOK "$SMPROGRAMS\RapidReg"
+    Delete "$SMSTARTUP\StartRapidReg.lnk"
 
     DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "WinRapidReg"
-    Delete "$SMSTARTUP\winrapidreg.bat"
+
+    nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
 SectionEnd
 
 Function .onInstSuccess
