@@ -38,13 +38,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     test.vm.network :forwarded_port, host: 8443, guest: 443
     test.vm.network :forwarded_port, host: 8080, guest: 80
     test.vm.network :forwarded_port, host: 6984, guest: 6984
+    test.vm.network :forwarded_port, host: 5984, guest: 5984
 
     test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
-
       # Simulate offline
+      cp /etc/resolv.conf /etc/_resolv.conf
       echo "nameserver 127.0.0.1" > /etc/resolv.conf
       cd /vagrant/artifacts
       ./install.sh
+
+      rm /etc/resolv.conf
+      mv /etc/_resolv.conf /etc/resolv.conf
     SCRIPT
   end
 
@@ -89,12 +93,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     test.vm.network :forwarded_port, host: 8443, guest: 443
     test.vm.network :forwarded_port, host: 8080, guest: 80
     test.vm.network :forwarded_port, host: 6984, guest: 6984
+    test.vm.network :forwarded_port, host: 5984, guest: 5984
 
     test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       #Simulate offline
+      cp /etc/resolv.conf /etc/_resolv.conf
       echo "nameserver 127.0.0.1" > /etc/resolv.conf
       cd /vagrant/artifacts/rapidreg
       ./rapidreg-install.sh
+
+      rm /etc/resolv.conf
+      mv /etc/_resolv.conf /etc/resolv.conf
     SCRIPT
   end
 

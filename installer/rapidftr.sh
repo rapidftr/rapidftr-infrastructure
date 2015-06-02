@@ -15,7 +15,7 @@
 PROG="rapidftr"
 
 start() {
-    docker start rapidftr
+    docker start $PROG
     echo "$PROG started"
 }
 

@@ -47,9 +47,9 @@ install_rapidreg() {
   sudo cp -f $BASEDIR/rapidreg.sh /etc/init.d/rapidreg
   sudo chmod +=rwx /etc/init.d/rapidreg
   sudo update-rc.d rapidreg defaults
-  sudo mkdir $DATADIR
+  sudo mkdir -p $DATADIR
   sudo chmod +=rwx $DATADIR
-  docker run -d -v $DATADIR:/data -e RAILS_ENV=production -e ENQUIRIES_FEATURE=off -p 80:80 -p 443:443 -p 6984:6984 -t --name rapidreg rapidreg /sbin/my_init
+  docker run -d -v $DATADIR:/data -e RAILS_ENV=production -e ENQUIRIES_FEATURE=off -p 80:80 -p 443:443 -p 6984:6984 -p 5984:5984 -t --name rapidreg rapidreg /sbin/my_init
   sudo /etc/init.d/rapidreg start
 }
 
