@@ -72,9 +72,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       mkdir -p artifacts artifacts/rapidreg/apt
 
       docker pull rapidreg/rapidreg:latest
-      (docker rm -f rapidreg || echo) >/dev/null 2>&1
-      docker run --entrypoint /bin/echo --name rapidreg rapidreg/rapidreg:latest
-      docker export rapidreg | gzip -c > artifacts/rapidreg/rapidreg-image.tar.gz
+      docker save rapidreg/rapidreg:latest | gzip -c > artifacts/rapidreg/rapidreg-image.tar.gz
 
       cp /var/cache/apt/archives/*.deb artifacts/rapidreg/apt
       cp rapidreg-install.sh artifacts/rapidreg/
