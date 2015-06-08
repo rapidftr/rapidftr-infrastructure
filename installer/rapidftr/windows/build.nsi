@@ -6,7 +6,7 @@ ShowUninstDetails hide
 Name "RapidFTR"
 Caption "RapidFTR"
 
-OutFile "rapidftr.exe"
+OutFile "setup.exe"
 
 SetDateSave on
 SetDatablockOptimize on

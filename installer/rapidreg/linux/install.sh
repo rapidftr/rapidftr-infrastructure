@@ -1,6 +1,7 @@
 SCRIPT=$(readlink -f "$0")
 BASEDIR=$(dirname $SCRIPT)
 DATADIR="/data/rapidreg"
+RAPIDREG_DIR="/rapidreg/"
 
 install_docker() {
   echo "Checking if we can install Docker online..."
@@ -39,17 +40,21 @@ check_requirements() {
 remove_rapidreg() {
   echo "Removing old RapidReg..."
   docker ps -a | grep 'rapidreg' | cut -d' ' -f1 | xargs -I {} docker rm -f {}
+  rm /etc/init.d/rapidreg
 }
 
 install_rapidreg() {
   echo "Installing RapidReg..."
   docker load < rapidreg-image.tar.gz
+  mkdir -p $RAPIDREG_DIR
+  cp rapidreg-image.tar.gz $RAPIDREG_DIR/
+
   sudo cp -f $BASEDIR/rapidreg.sh /etc/init.d/rapidreg
   sudo chmod +=rwx /etc/init.d/rapidreg
   sudo update-rc.d rapidreg defaults
   sudo mkdir -p $DATADIR
   sudo chmod +=rwx $DATADIR
-  docker run -d -v $DATADIR:/data -e RAILS_ENV=production -e ENQUIRIES_FEATURE=off -p 80:80 -p 443:443 -p 6984:6984 -p 5984:5984 -t --name rapidreg rapidreg/rapidreg:latest /sbin/my_init
+  docker run -d -v $DATADIR:/data -e RAILS_ENV=production -e ENQUIRIES_FEATURE=off -p 80:80 -p 443:443 -p 6984:6984 -p 5984:5984 -t --name rapidreg rapidreg/rapidreg:latest
   sudo /etc/init.d/rapidreg start
 }
 

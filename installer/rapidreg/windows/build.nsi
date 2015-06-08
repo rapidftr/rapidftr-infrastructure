@@ -6,7 +6,7 @@ ShowUninstDetails hide
 Name "RapidReg"
 Caption "RapidReg"
 
-OutFile "rapidreg.exe"
+OutFile "setup.exe"
 
 SetDateSave on
 SetDatablockOptimize on
@@ -28,7 +28,8 @@ Section "Installing RapidReg"
 
     ReadRegStr $1 HKLM "SOFTWARE\Oracle\VirtualBox" "InstallDir"
     ${If} $1 == ""
-        File /a "VirtualBox.exe"
+        ;File /a "VirtualBox.exe"
+        CopyFiles /SILENT $EXEDIR\support\VirtualBox.exe $INSTDIR
         EXecWait '"$INSTDIR\VirtualBox.exe" --msiparams REBOOT=ReallySuppress'
     ${EndIf}
 
@@ -40,7 +41,7 @@ Section "Installing RapidReg"
     nsExec::Exec '"$0\VBoxManage.exe" controlvm $vmname poweroff'
     nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
 
-    File /a "winrapidreg.ova"
+    CopyFiles /SILENT $EXEDIR\support\winrapidreg.ova $INSTDIR\winrapidreg.ova
     nsExec::Exec '"$0\VBoxManage.exe" import winrapidreg.ova'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "http,tcp,0.0.0.0,80,,80"'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "https,tcp,0.0.0.0,443,,443"'

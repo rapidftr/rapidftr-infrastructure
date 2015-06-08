@@ -8,26 +8,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = 'ubuntu/trusty64'
 
-  config.vm.define "linux-dev", primary: true do |dev|
+  config.vm.define "rapidftr-dev", primary: true do |dev|
     dev.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       apt-get update
       wget -qO- https://get.docker.io/ | sh
 
       cd /vagrant
-      mkdir -p artifacts artifacts/apt
+      mkdir -p rapidftr/linux/apt
 
       docker pull rapidftr/rapidftr:latest
-      (docker rm -f rapidftr || echo) >/dev/null 2>&1
-      docker run --entrypoint /bin/echo --name rapidftr rapidftr/rapidftr:latest
-      docker export rapidftr | gzip -c > artifacts/rapidftr-image.tar.gz
+      docker save rapidftr/rapidftr:latest | gzip -c > rapidftr/linux/rapidftr-image.tar.gz
 
-      cp /var/cache/apt/archives/*.deb artifacts/apt/
-      cp install.sh artifacts/
-      cp rapidftr.sh artifacts/
+      cp /var/cache/apt/archives/*.deb rapidftr/linux/apt/
     SCRIPT
   end
 
-  config.vm.define "linux-test", autostart: false do |test|
+  config.vm.define "rapidftr-test", autostart: false do |test|
     test.vm.provider :virtualbox do |vb|
         vb.name = "winrapidftr"
         vb.cpus = 1
@@ -44,7 +40,66 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Simulate offline
       cp /etc/resolv.conf /etc/_resolv.conf
       echo "nameserver 127.0.0.1" > /etc/resolv.conf
-      cd /vagrant/artifacts
+
+      cd /vagrant/rapidftr/linux
+      ./install.sh
+
+      rm /etc/resolv.conf
+      mv /etc/_resolv.conf /etc/resolv.conf
+
+
+      INSTALLER_FILE=rapidreg-linux-installer.tar.gz
+
+      [ -f $INSTALLER_FILE ] && rm $INSTALLER_FILE
+
+      tar czf $INSTALLER_FILE -C rapidreg/linux/ .
+    SCRIPT
+  end
+
+  config.vm.define "rapidftr-windows-installer", autostart: false do |installer|
+
+    installer.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      apt-get update
+      apt-get -y install scons g++ zlib1g-dev unzip nsis
+
+      cd /vagrant/rapidftr/windows/
+      makensis build.nsi
+
+      if [ ! -f /vagrant/rapidftr/windows/support/Virtualbox.exe ]; then
+        wget -O /vagrant/rapidftr/windows/support/Virtualbox.exe http://download.virtualbox.org/virtualbox/4.3.28/VirtualBox-4.3.28-100309-Win.exe
+      fi
+
+      INSTALLER_FILE=rapidftr-windows-installer.tar.gz
+
+      [ -f $INSTALLER_FILE ] && rm $INSTALLER_FILE
+
+      tar czf $INSTALLER_FILE --exclude='*.nsi' -C rapidftr/windows/ .
+    SCRIPT
+  end
+
+  config.vm.define "rapidreg-dev", autostart: false do |dev|
+
+    dev.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      apt-get update
+      wget -qO- https://get.docker.io/ | sh
+
+      cd /vagrant
+      mkdir -p rapidreg/linux/apt
+
+      docker pull rapidreg/rapidreg:latest
+      docker save rapidreg/rapidreg:latest | gzip -c > rapidreg/linux/rapidreg-image.tar.gz
+
+      cp /var/cache/apt/archives/*.deb /vagrant/rapidreg/linux/apt
+    SCRIPT
+  end
+
+  config.vm.define "rapidreg-test", autostart: false do |test|
+    test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+      #Simulate offline
+      cp /etc/resolv.conf /etc/_resolv.conf
+      echo "nameserver 127.0.0.1" > /etc/resolv.conf
+
+      cd /vagrant/rapidreg/linux/
       ./install.sh
 
       rm /etc/resolv.conf
@@ -52,66 +107,48 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     SCRIPT
   end
 
-  config.vm.define "linux-windows-installer", autostart: false do |installer|
+  config.vm.define "rapidreg-installers", autostart: false do |builder|
 
-    installer.vm.provision :shell, privileged: true, inline: <<-SCRIPT
-      apt-get update
-      apt-get -y install scons g++ zlib1g-dev unzip nsis
-
-      makensis /vagrant/windows/installer.nsi
-    SCRIPT
-  end
-
-  config.vm.define "linux-rapidreg-dev", autostart: false do |dev|
-    dev.vm.provision :shell, privileged: true, inline: <<-SCRIPT
-      apt-get update
-      apt-get update
-      wget -qO- https://get.docker.io/ | sh
-
-      cd /vagrant
-      mkdir -p artifacts artifacts/rapidreg/apt
-
-      docker pull rapidreg/rapidreg:latest
-      docker save rapidreg/rapidreg:latest | gzip -c > artifacts/rapidreg/rapidreg-image.tar.gz
-
-      cp /var/cache/apt/archives/*.deb artifacts/rapidreg/apt
-      cp rapidreg-install.sh artifacts/rapidreg/
-      cp rapidreg.sh artifacts/rapidreg/
-    SCRIPT
-  end
-
-  config.vm.define "linux-rapidreg-test", autostart: false do |test|
-    test.vm.provider :virtualbox do |vb|
+    builder.vm.provider :virtualbox do |vb|
         vb.name = "winrapidreg"
         vb.cpus = 1
         vb.memory = 1024
         vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
     end
 
-    test.vm.network :forwarded_port, host: 8443, guest: 443
-    test.vm.network :forwarded_port, host: 8080, guest: 80
-    test.vm.network :forwarded_port, host: 6984, guest: 6984
-    test.vm.network :forwarded_port, host: 5984, guest: 5984
+    builder.vm.network :forwarded_port, host: 8443, guest: 443
+    builder.vm.network :forwarded_port, host: 8080, guest: 80
+    builder.vm.network :forwarded_port, host: 6984, guest: 6984
+    builder.vm.network :forwarded_port, host: 5984, guest: 5984
 
-    test.vm.provision :shell, privileged: true, inline: <<-SCRIPT
-      #Simulate offline
-      cp /etc/resolv.conf /etc/_resolv.conf
-      echo "nameserver 127.0.0.1" > /etc/resolv.conf
-      cd /vagrant/artifacts/rapidreg
-      ./rapidreg-install.sh
-
-      rm /etc/resolv.conf
-      mv /etc/_resolv.conf /etc/resolv.conf
-    SCRIPT
-  end
-
-  config.vm.define "linux-rapidregwindows-installer", autostart: false do |installer|
-
-    installer.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+    builder.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       apt-get update
+      wget -qO- https://get.docker.io/ | sh
+
+      mkdir -p /rapidreg/
+
+      docker pull rapidreg/rapidreg:latest
+      docker save rapidreg/rapidreg:latest | gzip -c > /vagrant/rapidreg/linux/rapidreg-image.tar.gz
+      cp /vagrant/rapidreg/linux/rapidreg-image.tar.gz /rapidreg/
+
+      cp /var/cache/apt/archives/*.deb rapidreg/linux/apt
+
+      DATADIR="/data/rapidreg"
+
+      sudo cp -f /vagrant/rapidreg/linux/rapidreg.sh /etc/init.d/rapidreg
+      sudo chmod +=rwx /etc/init.d/rapidreg
+      sudo update-rc.d rapidreg defaults
+      sudo mkdir -p $DATADIR
+      sudo chmod +=rwx $DATADIR
+      /etc/init.d/rapidreg start
+
+      #echo "--------------------- compiling windows installer ---------------"
       apt-get -y install scons g++ zlib1g-dev unzip nsis
 
-      makensis /vagrant/windows/rapidreg_installer.nsi
+      cd /vagrant/rapidreg/windows/
+      makensis build.nsi
+
     SCRIPT
   end
+
 end

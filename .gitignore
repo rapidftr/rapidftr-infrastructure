@@ -124,3 +124,6 @@ Session.vim
 *.exe
 *.ova
 *.iso
+*.deb
+*.gz
+*.tar

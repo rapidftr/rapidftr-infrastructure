@@ -14,9 +14,22 @@
 
 PROG="rapidreg"
 DATADIR="/data/rapidreg"
+DOCKER_IMAGE_DIR="/rapidreg/"
 
 start() {
-  docker start $PROG
+  DOCKER_IMAGE_ID=$(docker images | grep -e 'rapidreg/rapidreg' | sed -E 's/rapidreg\/rapidreg *latest *([0-9a-z]+) *.*/\1/g')
+  if [ -z $DOCKER_IMAGE_ID ]; then
+    docker load < $DOCKER_IMAGE_DIR/rapidreg-image.tar.gz
+  fi
+
+  DOCKER_CONTAINER_ID=$(docker ps -aq -f 'name=rapidreg')
+
+  if [ -z $DOCKER_CONTAINER_ID ]; then
+    docker run -d -v $DATADIR:/data -e RAILS_ENV=production -e ENQUIRIES_FEATURE=off -p 80:80 -p 443:443 -p 6984:6984 -p 5984:5984 -t --name rapidreg rapidreg/rapidreg:latest
+  else
+    docker start $PROG
+  fi
+
   echo "$PROG started"
 }
 
