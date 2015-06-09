@@ -56,24 +56,46 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     SCRIPT
   end
 
-  config.vm.define "rapidftr-windows-installer", autostart: false do |installer|
+  config.vm.define "rapidftr-installers", autostart: false do |builder|
 
-    installer.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+    builder.vm.provider :virtualbox do |vb|
+        vb.name = "winrapidftr"
+        vb.cpus = 1
+        vb.memory = 1024
+        vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+    end
+
+    builder.vm.network :forwarded_port, host: 8443, guest: 443
+    builder.vm.network :forwarded_port, host: 8080, guest: 80
+    builder.vm.network :forwarded_port, host: 6984, guest: 6984
+    builder.vm.network :forwarded_port, host: 5984, guest: 5984
+
+    builder.vm.provision :shell, privileged: true, inline: <<-SCRIPT
       apt-get update
+      wget -qO- https://get.docker.io/ | sh
+
+      mkdir -p /rapidftr/
+
+      docker pull rapidftr/rapidftr:latest
+      docker save rapidftr/rapidftr:latest | gzip -c > rapidftr/linux/rapidftr-image.tar.gz
+
+      cp /vagrant/rapidftr/linux/rapidftr-image.tar.gz /rapidftr/
+
+      DATADIR="/data/rapidftr"
+
+      sudo cp -f /vagrant/rapidftr/linux/rapidftr.sh /etc/init.d/rapidftr
+      sudo chmod +=rwx /etc/init.d/rapidftr
+      sudo update-rc.d rapidftr defaults
+      sudo mkdir -p $DATADIR
+      sudo chmod +=rwx $DATADIR
+      /etc/init.d/rapidftr start
+
+      #echo "--------------------- compiling windows installer ---------------"
       apt-get -y install scons g++ zlib1g-dev unzip nsis
 
       cd /vagrant/rapidftr/windows/
       makensis build.nsi
 
-      if [ ! -f /vagrant/rapidftr/windows/support/Virtualbox.exe ]; then
-        wget -O /vagrant/rapidftr/windows/support/Virtualbox.exe http://download.virtualbox.org/virtualbox/4.3.28/VirtualBox-4.3.28-100309-Win.exe
-      fi
-
-      INSTALLER_FILE=rapidftr-windows-installer.tar.gz
-
-      [ -f $INSTALLER_FILE ] && rm $INSTALLER_FILE
-
-      tar czf $INSTALLER_FILE --exclude='*.nsi' -C rapidftr/windows/ .
     SCRIPT
   end
 

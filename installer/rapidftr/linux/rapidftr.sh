@@ -13,10 +13,25 @@
 ### END INIT INFO
 
 PROG="rapidftr"
+DATADIR="/data/rapidftr"
+DOCKER_IMAGE_DIR="/rapidftr/"
+
 
 start() {
+  DOCKER_IMAGE_ID=$(docker images | grep -e 'rapidftr/rapidftr' | sed -E 's/rapidftr\/rapidftr *latest *([0-9a-z]+) *.*/\1/g')
+  if [ -z $DOCKER_IMAGE_ID ]; then
+    docker load < $DOCKER_IMAGE_DIR/rapidftr-image.tar.gz
+  fi
+
+  DOCKER_CONTAINER_ID=$(docker ps -aq -f 'name=rapidftr')
+
+  if [ -z $DOCKER_CONTAINER_ID ]; then
+    docker run -d -v $DATADIR:/data -e RAILS_ENV=production -e ENQUIRIES_FEATURE=on -p 80:80 -p 443:443 -p 6984:6984 -p 5984:5984 -t --name rapidftr rapidftr/rapidftr:latest
+  else
     docker start $PROG
-    echo "$PROG started"
+  fi
+
+  echo "$PROG started"
 }
 
 stop() {
