@@ -1,6 +1,6 @@
 #!/bin/bash
-BASEDIR=$(dirname $0)
-
+#BASEDIR=$(dirname $0)
+BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 if [ ! -f Vagrantfile ]; then
   echo "Missing Vagrantfile"
   exit 1;
@@ -19,6 +19,8 @@ INSTALLER_FILE=$BASEDIR/rapidftr-linux-installer.tar.gz
 tar czf $INSTALLER_FILE -C $BASEDIR/rapidftr/linux/ .
 
 echo "--------------------------- packaging windows installer -----------------------"
+mkdir -p $BASEDIR/rapidftr/windows/support/
+
 if [ -f $BASEDIR/rapidftr/windows/support/winrapidreg.ova ]; then
     rm $BASEDIR/rapidftr/windows/support/winrapidreg.ova;
 fi

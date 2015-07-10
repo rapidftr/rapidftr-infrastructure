@@ -44,7 +44,8 @@ Section "Installing RapidFTR"
     nsExec::Exec '"$0\VBoxManage.exe" import winrapidftr.ova'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "http,tcp,0.0.0.0,80,,80"'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "https,tcp,0.0.0.0,443,,443"'
-    nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "couchdb,tcp,0.0.0.0,6984,,6984"'
+    nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "couchdb,tcp,0.0.0.0,5984,,5984"'
+    nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "couchdb_rep,tcp,0.0.0.0,6984,,6984"'
     nsExec::Exec '"$0\VBoxManage.exe" startvm $vmname --type headless'
 
     ;create start-menu items
