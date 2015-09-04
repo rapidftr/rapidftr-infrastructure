@@ -13,7 +13,7 @@ SetDatablockOptimize on
 CRCCheck on
 SilentInstall normal
 
-InstallDir "$PROGRAMFILES\RapidFTR\RapidFTR2.0"
+InstallDir "$PROGRAMFILES\RapidFTR\RapidFTR"
 
 Var DataDir
 Var vmname
@@ -28,7 +28,8 @@ Section "Installing RapidFTR"
 
     ReadRegStr $1 HKLM "SOFTWARE\Oracle\VirtualBox" "InstallDir"
     ${If} $1 == ""
-        File /a "VirtualBox.exe"
+        ;File /a "VirtualBox.exe"
+        CopyFiles /SILENT $EXEDIR\support\VirtualBox.exe $INSTDIR
         EXecWait '"$INSTDIR\VirtualBox.exe" --msiparams REBOOT=ReallySuppress'
     ${EndIf}
 
@@ -40,7 +41,7 @@ Section "Installing RapidFTR"
     nsExec::Exec '"$0\VBoxManage.exe" controlvm $vmname poweroff'
     nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
 
-    File /a "winrapidftr.ova"
+    CopyFiles /SILENT $EXEDIR\support\winrapidftr.ova $INSTDIR\winrapidftr.ova
     nsExec::Exec '"$0\VBoxManage.exe" import winrapidftr.ova'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "http,tcp,0.0.0.0,80,,80"'
     nsExec::Exec '"$0\VBoxManage.exe" modifyvm $vmname --natpf1 "https,tcp,0.0.0.0,443,,443"'
@@ -76,30 +77,39 @@ Section "Installing RapidFTR"
     FileClose $9
 
     CreateShortCut "$SMPROGRAMS\RapidFTR\StopRapidFTR.lnk" "$INSTDIR\stop.bat" "" "$INSTDIR\stop.bat" 0 SW_SHOWNORMAL
+
+    ;registry entry for the add/remove programs in the control panel
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RapidFTR" "DisplayName" "RapidFTR - Child Registration"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RapidFTR" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+
 SectionEnd
 
 UninstallText "This will uninstall RapidFTR"
-
+ 
 Section "Uninstall"
     ;LogSet on
     StrCpy $vmname "winrapidftr"
     ReadRegStr $0 HKLM "SOFTWARE\Oracle\VirtualBox" "InstallDir"
     nsExec::Exec '"$0\VBoxManage.exe" controlvm $vmname poweroff'
-    nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
-
-    ;delete all files from the installation directory
-    RMDir /r "$INSTDIR\*.*"
 
     ;remove the installation directory
-    RMDir /r $INSTDIR
-    RMDir /r "$PROGRAMFILES\RapidFTR"
+    RMDir /r /REBOOTOK "$PROGRAMFILES\RapidFTR"
 
     ;remove the startmenu directory for the application
+    SetShellVarContext current
     Delete "$SMPROGRAMS\RapidFTR\*.*"
-    RMDir /r "$SMPROGRAMS\RapidFTR"
+    RMDir /r /REBOOTOK "$SMPROGRAMS\RapidFTR"
+    Delete "$SMSTARTUP\StartRapidFTR.lnk"
+
+    SetShellVarContext all
+    Delete "$SMPROGRAMS\RapidFTR\*.*"
+    RMDir /r /REBOOTOK "$SMPROGRAMS\RapidFTR"
+    Delete "$SMSTARTUP\StartRapidFTR.lnk"
 
     DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "WinRapidFTR"
-    Delete "$SMSTARTUP\winrapidftr.bat"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RapidFTR"
+
+    nsExec::Exec '"$0\VBoxManage.exe" unregistervm --delete $vmname'
 SectionEnd
 
 Function .onInstSuccess
